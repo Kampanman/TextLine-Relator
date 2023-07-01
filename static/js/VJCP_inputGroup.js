@@ -83,19 +83,23 @@ let inputGroup = Vue.component("input-group", {
       this.validArray = [];
       const formElem = document.forms[this.formName];
       if (this.validForm(formElem).res) {
-        let formTextArray = formElem.text.value.split("\n");
-        let form = {};
-        form.type = this.partsType;
-        form.title = formElem.title.value;
-        form.url = formElem.url.value;
-        form.textarray = formTextArray;
-        this.$emit("note-data", form);
+        let result = window.confirm("これで出力します。よろしいですか？");
+        if (result) {
+          let formTextArray = formElem.text.value.split("\n");
+          let form = {};
+          form.type = this.partsType;
+          form.title = formElem.title.value;
+          form.url = formElem.url.value;
+          form.textarray = formTextArray;
+          this.$emit("note-data", form);
+        }
       } else {
         this.validArray = this.validForm(formElem).mes_arr;
       }
     },
     validForm(formElem) {
       let resObject = { res: true, mes_arr: [] };
+      
       // ノートタイトルに関する判定
       if (this.isEmpty(formElem.title.value)) {
         resObject.res = false;
@@ -104,6 +108,7 @@ let inputGroup = Vue.component("input-group", {
         resObject.res = false;
         resObject.mes_arr.push("ノートタイトルが100文字を超えています。");
       }
+      
       // ノート本文に関する判定
       if (this.isEmpty(formElem.text.value)) {
         resObject.res = false;
@@ -112,6 +117,7 @@ let inputGroup = Vue.component("input-group", {
         resObject.res = false;
         resObject.mes_arr.push("ノート本文の文字数が多すぎます。");
       }
+      
       // ノートURLに関する判定
       if (!this.isEmpty(formElem.url.value)) {
         const pattern = /^https?:\/\/[\w/:%#\$&\?\(\)~\.=\+\-]+$/

@@ -35,12 +35,15 @@
         </div>
         <!-- /* 入力ノート出力・補足テキスト入力エリア */ -->
         <div class="fader" v-if="phase==1">
-          <h3 align="center">フェーズ２：ノート出力・補足テキスト入力</h3>
+          <h3 align="center">フェーズ２：ノート出力・行別設定</h3>
+          <div align="center">
+            <br /><input type="button" class="btn btn-danger" value="やり直す" @click="retry">
+          </div>
+          <viewnote-area :object="base"></viewnote-area>
         </div>
         <!-- /* 最終出力・ダウンロードボタンエリア */ -->
         <div class="fader" v-if="phase==2">
           <h3 align="center">フェーズ３：最終出力・ダウンロード</h3>
-        
         </div>
       </section>
       <!-- /* ここまでが Vueインスタンス */ -->
@@ -54,6 +57,7 @@
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
   <script type="module">
     import inputGroup from './static/js/VJCP_inputGroup.js';
+    import viewNoteArea from './static/js/VJCP_viewNoteArea.js';
     
     const common = new Vue({
       el: '#vueArea',
@@ -85,7 +89,10 @@
             this.base.url = form.url;
             this.base.textarray = form.textarray;
           }
-          console.log(this.base);
+        },
+        retry(){
+          const confirm = window.confirm("画面をリロードします。よろしいですか？");
+          if(confirm) location.reload();
         }
       },
     });
