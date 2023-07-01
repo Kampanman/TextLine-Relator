@@ -29,11 +29,19 @@
       <!-- /* ここからが Vueインスタンス */ -->
       <section id="vueArea">
         <!-- /* ノート入力エリア */ -->
-        <div class="fader">
-          <input-group v-if="phase==0" :type="'1'" :form="'note_input'" @note-data="getNote"></input-group>
+        <div class="fader" v-if="phase==0">
+          <h3 align="center">フェーズ１：ノート入力</h3>
+          <input-group :type="'1'" :form="'note_input'" @note-data="getNote"></input-group>
         </div>
         <!-- /* 入力ノート出力・補足テキスト入力エリア */ -->
+        <div class="fader" v-if="phase==1">
+          <h3 align="center">フェーズ２：ノート出力・補足テキスト入力</h3>
+        </div>
         <!-- /* 最終出力・ダウンロードボタンエリア */ -->
+        <div class="fader" v-if="phase==2">
+          <h3 align="center">フェーズ３：最終出力・ダウンロード</h3>
+        
+        </div>
       </section>
       <!-- /* ここまでが Vueインスタンス */ -->
     </div>

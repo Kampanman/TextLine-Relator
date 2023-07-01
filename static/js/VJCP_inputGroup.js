@@ -3,11 +3,18 @@
  */
 let inputGroup = Vue.component("input-group", {
   template: `<div class="areaParts">
+    <p align="center" v-if="viewSessionMessage"><br /><b>セッションの保存内容を反映しました。</b></p>
     <form :name="formName">
-      <div class="separator"><label :for="'#' + formName + '_title'">ノートタイトル</label><input type="text" :id="formName + '_title'" name="title" :placeholder="phword.title"></div>
-      <div class="separator"><label :for="'#' + formName + '_url'">URL</label><input type="text" :id="formName + '_url'" name="url" :placeholder="phword.url"></div>
       <div class="separator">
-        <label :for="'#' + formName + '_text'">ノート本文</label><br>
+        <label :for="'#' + formName + '_title'">ノートタイトル <span style="color:red"><b>&#042;</b></span></label>
+        <input type="text" :id="formName + '_title'" name="title" :placeholder="phword.title">
+      </div>
+      <div class="separator">
+        <label :for="'#' + formName + '_url'">URL</label>
+        <input type="text" :id="formName + '_url'" name="url" :placeholder="phword.url">
+      </div>
+      <div class="separator">
+        <label :for="'#' + formName + '_text'">ノート本文 <span style="color:red"><b>&#042;</b></span></label><br>
         <span class="blacker">&nbsp;</span>
         <textarea :id="formName + '_text'" name="text" rows="5" :placeholder="phword.text" @input="biteCount"></textarea>
         <p align="center">現在の本文総バイト数：{{ currentBite }} バイト</p>
@@ -16,8 +23,8 @@ let inputGroup = Vue.component("input-group", {
         <span style="color:red;"><b>{{ message }}</b></span><br />
       </div>
       <div v-if="partsType==1" class="separator" align="center">
-        <input id="into-session" type="button" class="btn btn-primary" value="セッションにセーブする">
-        <input type="button" class="btn btn-secondary" value="セッションを空にする">
+        <input id="into-session" type="button" class="btn btn-primary" value="セッションにセーブする" @click="saveSession">
+        <input type="button" class="btn btn-secondary" value="セッションを空にする" @click="clearSession">
       </div>
       <div v-if="partsType==1" class="separator" align="center">
         <input type="button" class="btn btn-primary" value="これで出力する" @click="formFire">
@@ -32,6 +39,7 @@ let inputGroup = Vue.component("input-group", {
       partsType: this.type,
       formName: this.form,
       currentBite: 0,
+      viewSessionMessage: false,
       headword: "ノートの",
       phword: {
         title: "",
@@ -41,8 +49,25 @@ let inputGroup = Vue.component("input-group", {
       validArray: [],
     }
   },
+  // コンポーネント生成開始時の処理
   created: function () {
     this.init();
+  },
+  // コンポーネント生成が一通り終了した後の処理
+  mounted: function () {
+    if (this.partsType == 1) {
+      const formElem = document.forms[this.formName];
+      if (sessionStorage.getItem('base_title') != null) {
+        this.viewSessionMessage = true;
+        formElem.title.value = sessionStorage.getItem('base_title');
+      }
+      if (sessionStorage.getItem('base_url') != null) {
+        formElem.url.value = sessionStorage.getItem('base_url');
+      }
+      if (sessionStorage.getItem('base_text') != null) {
+        formElem.text.value = sessionStorage.getItem('base_text');
+      }
+    }
   },
   props: ['type','form'],
   methods: {
@@ -71,7 +96,6 @@ let inputGroup = Vue.component("input-group", {
     },
     validForm(formElem) {
       let resObject = { res: true, mes_arr: [] };
-      
       // ノートタイトルに関する判定
       if (this.isEmpty(formElem.title.value)) {
         resObject.res = false;
@@ -80,7 +104,6 @@ let inputGroup = Vue.component("input-group", {
         resObject.res = false;
         resObject.mes_arr.push("ノートタイトルが100文字を超えています。");
       }
-
       // ノート本文に関する判定
       if (this.isEmpty(formElem.text.value)) {
         resObject.res = false;
@@ -89,14 +112,13 @@ let inputGroup = Vue.component("input-group", {
         resObject.res = false;
         resObject.mes_arr.push("ノート本文の文字数が多すぎます。");
       }
-
       // ノートURLに関する判定
       if (!this.isEmpty(formElem.url.value)) {
         const pattern = /^https?:\/\/[\w/:%#\$&\?\(\)~\.=\+\-]+$/
         const isUrl = pattern.test(formElem.url.value);
         if (!isUrl) {
           resObject.res = false;
-          resObject.mes_arr.push("URR入力欄にはURL形式で入力してください。");
+          resObject.mes_arr.push("URL入力欄にはURL形式で入力してください。");
         }
       }
       
@@ -117,6 +139,34 @@ let inputGroup = Vue.component("input-group", {
       let number_bytes = encodeURI(formElem.text.value).replace(/%../g, "*").length;
       this.currentBite = number_bytes;
       return number_bytes;
+    },
+    saveSession() {
+      const formElem = document.forms[this.formName];
+      this.validArray = [];
+      if (this.validForm(formElem).res) {
+        let result = window.confirm("入力内容をセッションに登録します。よろしいですか？");
+        if (result) {
+          sessionStorage.clear();
+          sessionStorage.setItem('base_title', formElem.title.value);
+          sessionStorage.setItem('base_url', formElem.url.value);
+          sessionStorage.setItem('base_text', formElem.text.value);
+          setTimeout(() => alert("セッションに登録しました。"), 1000);
+        }
+      } else {
+        this.validArray = this.validForm(formElem).mes_arr;
+      }
+    },
+    clearSession() {
+      const confirmMessage = "セッションの登録内容を消去します。よろしいですか？\n"
+                              + "（消去後に画面をリロードします）";
+      let result = window.confirm(confirmMessage);
+      if (result) {
+        sessionStorage.clear();
+        setTimeout(function () {
+          alert("セッションの登録内容を消去しました。");
+          location.reload();
+        }, 1000);
+      }
     },
   },
 });
