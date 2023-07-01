@@ -11,77 +11,27 @@
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Sawarabi+Gothic" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="./static/css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <title>TextLine-Relator</title>
   <style scoped>
-    input[type=text], textarea, button, input[type=button] {
-      margin-left: 5px;
-      border-radius: 5px;
-    }
-    
-    input[type=text] { min-width: 300px; }
-
-    textarea { 
-      width: 95%;
-      resize: vertical;
-    }
-
-    button, input[type=button], label { cursor: pointer; }
-
-    h1, h2, h3, p, label { 
-      margin-left: 1em;
-    }
-
-    header {}
-
-    main {}
-
-    .separator { margin-bottom: 0.5em; }
-
-    .blanker { margin-left: 2em; }
-
-    @media only screen and (max-width: 480px) {
-      input[type=text] { margin-left: 1em; }
-      textarea {
-        width: 90%;
-        margin-right: 1em;
-      }
-    }
 
   </style>
 </head>
 <body>
-  <header id="headerArea">
-    <h2 id="contentsTitle"><span id="freeSubTheme"></span>Text-Relator</h2>
+  <header id="headerArea" align="center">
+    <h2 id="contentsTitle">TextLine-Relator</h2>
   </header>
-
   <main id="mainArea">
+    <div><hr /></div>
     <div id="backScale">
       <!-- /* ここからが Vueインスタンス */ -->
       <section id="vueArea">
         <!-- /* ノート入力エリア */ -->
-        <form name="note-input">
-          <div class="separator"><label for="title">ノートタイトル</label><input type="text" id="title" name="title"></div>
-          <div class="separator"><label for="url">URL</label><input type="text" id="url" name="title"></div>
-          <div class="separator">
-            <label for="text">ノート本文</label><br>
-            <span class="blacker">&nbsp;</span>
-            <textarea id="text" name="text" rows="5"></textarea>
-          </div>
-          <div class="separator" align="center">
-            <input id="into-session" type="button" class="btn btn-primary" value="セッションにセーブする">
-            <input type="button" class="btn btn-secondary" value="セッションを空にする">
-          </div>
-          <div class="separator" align="center">
-            <input type="button" class="btn btn-primary" value="これで出力する">
-          </div>
-<!--/* 
-  <div class="separator" align="center">
-    <input type="button" class="btn btn-primary" value="タイトルとURLを挿入する">
-  </div>
- */-->
-        </form>
+        <div class="fader">
+          <input-group v-if="phase==0" :type="'1'" :form="'note_input'" @note-data="getNote"></input-group>
+        </div>
         <!-- /* 入力ノート出力・補足テキスト入力エリア */ -->
         <!-- /* 最終出力・ダウンロードボタンエリア */ -->
       </section>
@@ -94,11 +44,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
-  <script>
-    function _id(param) { return document.getElementById(param); }
-    function _qAll(param) { return document.querySelectorAll(param); }
-    const subTheme = "";
-    _id("freeSubTheme").innerText = subTheme;
+  <script type="module">
+    import inputGroup from './static/js/VJCP_inputGroup.js';
     
     const common = new Vue({
       el: '#vueArea',
@@ -106,6 +53,12 @@
         return {
           headerObject: {
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          },
+          phase: 0,
+          base: {
+            title: "",
+            url: "",
+            textarray: "",
           },
         };
       },
@@ -117,6 +70,15 @@
         async init() {
 
         },
+        getNote(form){
+          if(form.type=='1'){
+            this.phase = 1;
+            this.base.title = form.title;
+            this.base.url = form.url;
+            this.base.textarray = form.textarray;
+          }
+          console.log(this.base);
+        }
       },
     });
   </script>
