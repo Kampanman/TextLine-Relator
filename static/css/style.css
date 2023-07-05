@@ -22,6 +22,17 @@
 
   .ft16px { font-size: 16px; }
 
+  .line-btn { padding: revert; }
+
+  .view { color: black; }
+
+  .unview { color: rgb(220, 220, 220); }
+
+  .str-sm {
+    font-size: 12px;
+    font-weight: 600;
+  }
+
   @media only screen and (min-width: 1000px) {
     .areaParts { width: 80%; }
   }
@@ -32,6 +43,7 @@
       width: 90%;
       margin-right: 1em;
     }
+    .modal-window { margin: 0.5em; }
   }
 
 /* コンテンツフェードイン機能 */

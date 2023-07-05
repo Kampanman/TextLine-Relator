@@ -15,8 +15,49 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <title>TextLine-Relator</title>
-  <style scoped>
+  <style lang="stylus" scoped>
+    /*
+      * モーダルに関する諸設定
+      */
+    .modal-overlay {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      z-index: 30;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .modal-window {
+      background: #fff;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .modal-content { padding: 10px 20px; }
+    .modal-footer { background: #ccc; }
 
+    /* オーバーレイのトランジション */
+    .modal-enter-active, .modal-leave-active {
+      transition: opacity 0.4s;
+    }
+
+    /* オーバーレイに包含されているモーダルウィンドウのトランジション */
+    .modal-enter-active .modal-window, 
+    .modal-leave-active .modal-window { transition: opacity 0.4s, transform 0.4s; }
+    
+    /* ディレイを付けるとモーダルウィンドウが消えた後にオーバーレイが消える */
+    .modal-leave-active { transition: opacity 0.6s ease 0.4s; }
+
+    .modal-enter, .modal-leave-to { opacity: 0; }
+
+    .modal-enter .modal-window, 
+    .modal-leave-to .modal-window {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
   </style>
 </head>
 <body>
@@ -39,7 +80,18 @@
           <div align="center">
             <br /><input type="button" class="btn btn-danger" value="やり直す" @click="retry">
           </div>
-          <viewnote-area :object="base"></viewnote-area>
+          <viewnote-area :object="base" @modal-function="openModal"></viewnote-area>
+            <!-- モーダルコンポーネント -->
+            <transition-modal @close="closeModal" v-if="modal">
+              <!-- default スロットコンテンツ -->
+              <input-group :type="'2'" :form="'add_relator'"></input-group>
+              <!-- /default -->
+              <!-- footer スロットコンテンツ -->
+              <template slot="footer">
+                <button>送信</button>
+              </template>
+              <!-- /footer -->
+            </transition-modal>
         </div>
         <!-- /* 最終出力・ダウンロードボタンエリア */ -->
         <div class="fader" v-if="phase==2">
@@ -58,6 +110,7 @@
   <script type="module">
     import inputGroup from './static/js/VJCP_inputGroup.js';
     import viewNoteArea from './static/js/VJCP_viewNoteArea.js';
+    import transitionModal from './static/js/VJCP_transitionModal.js';
     
     const common = new Vue({
       el: '#vueArea',
@@ -72,6 +125,7 @@
             url: "",
             textarray: "",
           },
+          modal: false,
         };
       },
       created: function () {
@@ -93,7 +147,13 @@
         retry(){
           const confirm = window.confirm("画面をリロードします。よろしいですか？");
           if(confirm) location.reload();
-        }
+        },
+        openModal() {
+          this.modal = true
+        },
+        closeModal() {
+          this.modal = false
+        },
       },
     });
   </script>
