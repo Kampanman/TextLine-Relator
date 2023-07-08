@@ -82,9 +82,9 @@
           </div>
           <viewnote-area :object="base" @modal-function="openModal"></viewnote-area>
             <!-- モーダルコンポーネント -->
-            <transition-modal @close="closeModal" v-if="modal">
+            <transition-modal :obj="modalObj" @close="closeModal" v-if="modal">
               <!-- default スロットコンテンツ -->
-              <input-group :type="'2'" :form="'add_relator'"></input-group>
+              <input-group :type="'2'" :form="'add_relator'" :txt="modalObj.text"></input-group>
               <!-- /default -->
               <!-- footer スロットコンテンツ -->
               <template slot="footer">
@@ -126,6 +126,10 @@
             textarray: "",
           },
           modal: false,
+          modalObj: {
+            target: "",
+            text: "",
+          },
         };
       },
       created: function () {
@@ -148,11 +152,23 @@
           const confirm = window.confirm("画面をリロードします。よろしいですか？");
           if(confirm) location.reload();
         },
-        openModal() {
-          this.modal = true
+        openModal(obj) {
+          this.modalReset();
+          document.getElementById(obj.target).classList.add("selected");
+          this.modalObj.target = obj.target;
+          this.modalObj.text = obj.text;
+          this.modal = true;
         },
         closeModal() {
-          this.modal = false
+          this.modalReset();
+          document.querySelectorAll(".selected").forEach((e)=>{
+            e.classList.remove("selected");
+          });
+          this.modal = false;
+        },
+        modalReset() {
+          this.modalObj.target = "";
+          this.modalObj.text = "";
         },
       },
     });

@@ -12,7 +12,13 @@
 
   button, input[type=button], label { cursor: pointer; }
 
-  h1, h2, h3, p, label { margin-left: 1em; }
+  h1, h2, h3, p, label, .rel { margin-left: 1em; }
+
+  .t-8, .t-2 { vertical-align: baseline; }
+
+  .t-8 { width: 80%; }
+  
+  .t-2 { width: 20%; }
 
   .areaParts { margin: 0 auto; }
 
@@ -22,9 +28,17 @@
 
   .ft16px { font-size: 16px; }
 
-  .line-btn { padding: revert; }
+  .line-btn {
+    margin-bottom: 3px;
+    padding: revert;
+  }
 
   .view { color: black; }
+
+  .selected {
+    color: orange;
+    font-weight: 600;
+  }
 
   .unview { color: rgb(220, 220, 220); }
 

@@ -7,6 +7,9 @@ let transitionModal = Vue.component("transition-modal", {
       <div class="modal-window">
         <br />
         <div class="modal-content">
+          <h3 align="center">
+            <b>Relator for {{ modalObject.target }}</b>
+          </h3><br />
           <slot/>
         </div>
         <footer class="modal-footer">
@@ -19,7 +22,7 @@ let transitionModal = Vue.component("transition-modal", {
   </transition>`,
   data: function(){
     return {
-      
+      modalObject: this.obj,
     }
   },
   // コンポーネント生成開始時の処理
@@ -30,6 +33,7 @@ let transitionModal = Vue.component("transition-modal", {
   mounted: function () {
 
   },
+  props: ['obj'],
   methods: {
     // 画面初期表示処理
     async init() {

@@ -16,7 +16,7 @@ let inputGroup = Vue.component("input-group", {
       <div class="separator">
         <label :for="'#' + formName + '_text'">ノート本文 <span style="color:red"><b>&#042;</b></span></label><br>
         <span class="blacker">&nbsp;</span>
-        <textarea :id="formName + '_text'" name="text" rows="5" :placeholder="phword.text" @input="biteCount"></textarea>
+        <textarea :id="formName + '_text'" name="text" rows="5" :placeholder="phword.text" @input="biteCount">{{ textareaValue }}</textarea>
         <p align="center">現在の本文総バイト数：{{ currentBite }} バイト</p>
       </div>
       <div :id="formName + '_validMessage'" class="separator" v-for="message in validArray" align="center">
@@ -30,7 +30,7 @@ let inputGroup = Vue.component("input-group", {
         <input type="button" class="btn btn-primary" value="これで出力する" @click="formFire">
       </div>
       <div v-if="partsType==2" class="separator" align="center">
-        <input type="button" class="btn btn-primary" value="タイトルとURLを挿入する">
+        <input type="button" class="btn btn-primary" value="タイトルとURLを本文に追加する" @click="addTitleUrl">
       </div>
     </form>
   </div>`,
@@ -38,6 +38,7 @@ let inputGroup = Vue.component("input-group", {
     return {
       partsType: this.type,
       formName: this.form,
+      textareaValue: this.txt,
       currentBite: 0,
       viewSessionMessage: false,
       headword: "ノートの",
@@ -69,7 +70,7 @@ let inputGroup = Vue.component("input-group", {
       }
     }
   },
-  props: ['type','form'],
+  props: ['type','form','txt'],
   methods: {
     // 画面初期表示処理
     async init() {
@@ -92,6 +93,23 @@ let inputGroup = Vue.component("input-group", {
           form.url = formElem.url.value;
           form.textarray = formTextArray;
           this.$emit("note-data", form);
+        }
+      } else {
+        this.validArray = this.validForm(formElem).mes_arr;
+      }
+    },
+    addTitleUrl() {
+      this.validArray = [];
+      const formElem = document.forms[this.formName];
+      if (this.validForm(formElem).res) {
+        let result = window.confirm("タイトルとURLを追加します。よろしいですか？");
+        if (result) {
+          let addText = "";
+          addText += "\n\n【出典】：" + formElem.title.value;
+          if (!this.isEmpty(formElem.url.value)) {
+            addText += "\n（ URL: " + formElem.url.value + " ）";
+          }
+          formElem.text.value += addText;
         }
       } else {
         this.validArray = this.validForm(formElem).mes_arr;
