@@ -63,11 +63,19 @@ let viewNoteArea = Vue.component("viewnote-area", {
       const target = e.target.dataset.target;
       document.getElementById(target).classList.remove('unview');
       document.getElementById(target).classList.add('view');
+      document.getElementById("rel-" + target).classList.remove('unview');
+      document.getElementById("rel-" + target).classList.add('view');
+      const add_num = target.replace("line_","");
+      document.getElementById("add_" + add_num).classList.remove("none");
     },
     unviewal(e) {
       const target = e.target.dataset.target;
       document.getElementById(target).classList.remove('view');
       document.getElementById(target).classList.add('unview');
+      document.getElementById("rel-" + target).classList.remove('view');
+      document.getElementById("rel-" + target).classList.add('unview');
+      const add_num = target.replace("line_","");
+      document.getElementById("add_" + add_num).classList.add("none");
     },
     openModal(e) {
       let target = e.target.dataset.target;

@@ -6,7 +6,7 @@ let inputGroup = Vue.component("input-group", {
     <p align="center" v-if="viewSessionMessage"><br /><b>セッションの保存内容を反映しました。</b></p>
     <form :name="formName">
       <div class="separator">
-        <label :for="'#' + formName + '_title'">ノートタイトル <span style="color:red"><b>&#042;</b></span></label>
+        <label :for="'#' + formName + '_title'">ノートタイトル <span style="color:red" v-if="partsType==1"><b>&#042;</b></span></label>
         <input type="text" :id="formName + '_title'" name="title" :placeholder="phword.title">
       </div>
       <div class="separator">
@@ -31,6 +31,9 @@ let inputGroup = Vue.component("input-group", {
       </div>
       <div v-if="partsType==2" class="separator" align="center">
         <input type="button" class="btn btn-primary" value="タイトルとURLを本文に追加する" @click="addTitleUrl">
+      </div>
+      <div v-if="partsType==2" class="separator" align="center">
+        <input type="button" class="btn btn-warning" value="関連コンテンツに設定する" @click="setRelator">
       </div>
     </form>
   </div>`,
@@ -115,6 +118,18 @@ let inputGroup = Vue.component("input-group", {
         this.validArray = this.validForm(formElem).mes_arr;
       }
     },
+    setRelator() {
+      this.validArray = [];
+      const formElem = document.forms[this.formName];
+      const relateText = formElem.text.value;
+
+      if (this.validRelatorText(relateText).res) {
+        let result = window.confirm("関連コンテンツに設定します。よろしいですか？");
+        if (result) this.$emit("relator-data", relateText);
+      } else {
+        this.validArray = this.validRelatorText(relateText).mes_arr;
+      }
+    },
     validForm(formElem) {
       let resObject = { res: true, mes_arr: [] };
       
@@ -146,6 +161,18 @@ let inputGroup = Vue.component("input-group", {
         }
       }
       
+      return resObject;
+    },
+    validRelatorText(val) {
+      let resObject = { res: true, mes_arr: [] };
+      if (this.isEmpty(val)) {
+        resObject.res = false;
+        resObject.mes_arr.push("ノート本文を入力してください。");
+      }else if(this.biteCount(val) > 65000){
+        resObject.res = false;
+        resObject.mes_arr.push("ノート本文の文字数が多すぎます。");
+      }
+
       return resObject;
     },
     isEmpty(str) {

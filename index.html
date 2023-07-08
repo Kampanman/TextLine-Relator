@@ -84,11 +84,13 @@
             <!-- モーダルコンポーネント -->
             <transition-modal :obj="modalObj" @close="closeModal" v-if="modal">
               <!-- default スロットコンテンツ -->
-              <input-group :type="'2'" :form="'add_relator'" :txt="modalObj.text"></input-group>
+              <input-group :type="'2'" :form="'add_relator'" :txt="modalObj.text" @relator-data="getRelator"></input-group>
               <!-- /default -->
               <!-- footer スロットコンテンツ -->
               <template slot="footer">
-                <button>送信</button>
+                <div align="center">
+                  <input type="button" class="btn btn-danger" value="閉じる" @click="closeModal">
+                </div>
               </template>
               <!-- /footer -->
             </transition-modal>
@@ -147,6 +149,10 @@
             this.base.url = form.url;
             this.base.textarray = form.textarray;
           }
+        },
+        getRelator(text){
+          this.modalObj.text = text;
+          console.log(this.modalObj);
         },
         retry(){
           const confirm = window.confirm("画面をリロードします。よろしいですか？");
