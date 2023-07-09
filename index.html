@@ -152,7 +152,11 @@
         },
         getRelator(text){
           this.modalObj.text = text;
-          console.log(this.modalObj);
+          let rel_parts = document.getElementById("rel-" + this.modalObj.target);
+          rel_parts.innerText = "Good!";
+          rel_parts.dataset.text = this.modalObj.text;
+          let this_num = this.modalObj.target.replace("line_","");
+          document.getElementById("cancel_" + this_num).classList.remove("none");
         },
         retry(){
           const confirm = window.confirm("画面をリロードします。よろしいですか？");

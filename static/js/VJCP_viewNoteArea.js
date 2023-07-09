@@ -35,6 +35,10 @@ let viewNoteArea = Vue.component("viewnote-area", {
               <p class="ft16px">
                 <span :id="'rel-line_' + index" class="view rel" data-text="">--</span>
               </p>
+              <p class="ft16px">
+                <input type="button" :id="'cancel_' + index" :data-target="'rel-line_' + index" 
+                  class="btn btn-sm line-btn btn-danger str-sm rel-btn none" value="Cancel" @click="cancelRelator">
+              </p>
             </td>
           </tr>
         </table>
@@ -86,6 +90,10 @@ let viewNoteArea = Vue.component("viewnote-area", {
       }
       this.$emit('modal-function', line_object);
     },
+    cancelRelator(e) {
+      console.log(e.target.dataset.target);
+      e.target.classList.add("none");
+    }
   },
 });
 
