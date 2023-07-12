@@ -12,7 +12,7 @@
 
   button, input[type=button], label { cursor: pointer; }
 
-  h1, h2, h3, p, label, .rel, .rel-btn { margin-left: 1em; }
+  h1, h2, h3, p, label, .rel { margin-left: 1em; }
 
   .t-8, .t-2 { vertical-align: baseline; }
 

@@ -78,7 +78,8 @@
         <div class="fader" v-if="phase==1">
           <h3 align="center">フェーズ２：ノート出力・行別設定</h3>
           <div align="center">
-            <br /><input type="button" class="btn btn-danger" value="やり直す" @click="retry">
+            <br /><input type="button" class="btn btn-primary" value="これで出力する" @click="generateNote">
+            <input type="button" class="btn btn-danger" value="やり直す" @click="retry">
           </div>
           <viewnote-area :object="base" @modal-function="openModal"></viewnote-area>
             <!-- モーダルコンポーネント -->
@@ -132,6 +133,11 @@
             target: "",
             text: "",
           },
+          dlform: {
+            title: "",
+            url: "",
+            noteArray: [],
+          },
         };
       },
       created: function () {
@@ -153,10 +159,46 @@
         getRelator(text){
           this.modalObj.text = text;
           let rel_parts = document.getElementById("rel-" + this.modalObj.target);
-          rel_parts.innerText = "Good!";
           rel_parts.dataset.text = this.modalObj.text;
           let this_num = this.modalObj.target.replace("line_","");
+          rel_parts.innerText = this.makeRandNums(this_num);
           document.getElementById("cancel_" + this_num).classList.remove("none");
+          document.querySelectorAll(".selected").forEach((e) => {
+            e.classList.remove("selected");
+          });
+          this.modal = false;
+          setTimeout(()=> alert("関連コンテンツを設定しました。"), 1500);
+        },
+        generateNote(){
+          const conf = window.confirm("この内容でノートを出力します。よろしいですか？");
+
+          if(conf){
+            this.dlform.title = this.base.title;
+            this.dlform.url = this.base.url;
+            let note_arr = [];
+            document.querySelectorAll(".view").forEach((e) => {
+              if(e.classList.contains("rel")){
+                if(e.innerText == '--'){
+                  note_arr.push('\n');
+                }else{
+                  let this_text = " @" + e.innerText + '\n'
+                  note_arr.push(this_text);
+                }
+              }else{
+                note_arr.push(e.innerText);
+              }
+            });
+            document.querySelectorAll(".rel").forEach((e) => {
+              if (e.innerText != '--') {
+                let this_text = "\n【@" + e.innerText + "】\n";
+                this_text += e.dataset.text + "\n\n";
+                note_arr.push(this_text);
+              }
+            });
+            this.dlform.noteArray = note_arr;
+            this.phase = 2;
+            setTimeout(() => alert("ノートを出力しました。"), 1500);
+          }
         },
         retry(){
           const confirm = window.confirm("画面をリロードします。よろしいですか？");
@@ -179,6 +221,16 @@
         modalReset() {
           this.modalObj.target = "";
           this.modalObj.text = "";
+        },
+        makeRandNums(line_num) {
+          let res_numstr = "";
+          res_numstr += line_num + "-";
+          for(let i=0; i<7; i++){
+            let rand_num = Math.floor(Math.random() * 10);
+            (i==3) ? res_numstr += "-" : res_numstr += rand_num;
+          }
+
+          return res_numstr;
         },
       },
     });

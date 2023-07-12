@@ -108,7 +108,7 @@ let inputGroup = Vue.component("input-group", {
         let result = window.confirm("タイトルとURLを追加します。よろしいですか？");
         if (result) {
           let addText = "";
-          addText += "\n\n【出典】：" + formElem.title.value;
+          addText += "\n【出典】：" + formElem.title.value;
           if (!this.isEmpty(formElem.url.value)) {
             addText += "\n（ URL: " + formElem.url.value + " ）";
           }
