@@ -71,6 +71,7 @@ let inputGroup = Vue.component("input-group", {
       if (sessionStorage.getItem('base_text') != null) {
         formElem.text.value = sessionStorage.getItem('base_text');
       }
+      this.biteCount();
     }
   },
   props: ['type','form','txt'],
