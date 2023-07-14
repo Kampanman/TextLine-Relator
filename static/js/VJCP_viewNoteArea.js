@@ -19,23 +19,28 @@ let viewNoteArea = Vue.component("viewnote-area", {
           <tr v-for="(line, index) in getObject.textarray">
             <td class="t-8">
               <p class="ft16px" v-if="line.length==0">
-                <span :id="'line_' + index" class="view"><br /></span>
+                <span :id="'line_' + (index+1)" class="view"><br /></span>
               </p>
               <p class="ft16px" v-else>
-                <input type="button" :id="'add_' + index" :data-target="'line_' + index" 
+                <input type="button" :id="'add_' + (index+1)" :data-target="'line_' + (index+1)" 
                   class="btn btn-sm line-btn btn-warning str-sm" value="Add-Relator" @click="openModal">
-                <input type="button" :id="'on_' + index" :data-target="'line_' + index" 
+                <input type="button" :id="'on_' + (index+1)" :data-target="'line_' + (index+1)" 
                   class="btn btn-sm line-btn btn-primary str-sm" value="ON" @click="viewal">
-                <input type="button" :id="'off_' + index" :data-target="'line_' + index" 
+                <input type="button" :id="'off_' + (index+1)" :data-target="'line_' + (index+1)" 
                   class="btn btn-sm line-btn btn-secondary str-sm" value="OFF" @click="unviewal">
-                <span :id="'line_' + index" class="view">{{ line }}</span>
+                <span :id="'line_' + (index+1)" class="view">{{ line }}</span>
               </p>
             </td>
             <td class="t-2">
               <p class="ft16px">
-                <span :id="'rel-line_' + index" class="view rel" data-text="">--</span>
+                <span 
+                  :id="'rel-line_' + (index+1)" 
+                  class="view rel" 
+                  :class="(line.length<1) ? 'pass' : ''" 
+                  data-text=""
+                >--</span>
                 <span>&nbsp;</span>
-                <input type="button" :id="'cancel_' + index" :data-target="'rel-line_' + index" 
+                <input type="button" :id="'cancel_' + (index+1)" :data-target="'rel-line_' + (index+1)" 
                 class="btn btn-sm line-btn btn-danger str-sm none" value="Cancel" @click="cancelRelator">
               </p>
             </td>

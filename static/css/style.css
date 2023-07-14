@@ -47,7 +47,14 @@
     font-weight: 600;
   }
 
+  .view_note_area { text-align: left; }
+
   .none { display: none; }
+
+  #vueArea {
+    margin: 0 auto;
+    width: 90%;
+  }
 
   @media only screen and (min-width: 1000px) {
     .areaParts { width: 80%; }

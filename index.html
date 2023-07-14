@@ -101,6 +101,7 @@
           <h3 align="center">フェーズ３：最終出力・ダウンロード</h3>
           <div align="center">
             <br /><input type="button" class="btn btn-danger" value="やり直す" @click="retry">
+            <review-dl :note="dlform"></review-dl>
           </div>
         </div>
       </section>
@@ -116,6 +117,7 @@
   <script type="module">
     import inputGroup from './static/js/VJCP_inputGroup.js';
     import viewNoteArea from './static/js/VJCP_viewNoteArea.js';
+    import reviewDlArea from './static/js/VJCP_reviewDlArea.js';
     import transitionModal from './static/js/VJCP_transitionModal.js';
     
     const common = new Vue({
@@ -174,30 +176,37 @@
         },
         generateNote(){
           const conf = window.confirm("この内容でノートを出力します。よろしいですか？");
-
           if(conf){
             this.dlform.title = this.base.title;
             this.dlform.url = this.base.url;
             let note_arr = [];
+            let rel_flg = 0;
             document.querySelectorAll(".view").forEach((e) => {
-              if(e.classList.contains("rel")){
-                if(e.innerText == '--'){
-                  note_arr.push('\n');
+              if(!e.classList.contains("pass")){
+                if(e.classList.contains("rel")){
+                  if(e.innerText == '--'){
+                    note_arr.push('\n');
+                  }else{
+                    rel_flg = 1;
+                    let this_text = " @" + e.innerText + '\n'
+                    note_arr.push(this_text);
+                  }
                 }else{
-                  let this_text = " @" + e.innerText + '\n'
+                  note_arr.push(e.innerText);
+                }
+              }
+            });
+            if(rel_flg != 0){
+              note_arr.push("\n＝＝＝ ↓ 関連ノート ↓ ＝＝＝\n\n");
+              document.querySelectorAll(".rel").forEach((e) => {
+                if (e.innerText != '--') {
+                  let this_text = "【@" + e.innerText + "】\n";
+                  this_text += e.dataset.text + "\n\n";
                   note_arr.push(this_text);
                 }
-              }else{
-                note_arr.push(e.innerText);
-              }
-            });
-            document.querySelectorAll(".rel").forEach((e) => {
-              if (e.innerText != '--') {
-                let this_text = "\n【@" + e.innerText + "】\n";
-                this_text += e.dataset.text + "\n\n";
-                note_arr.push(this_text);
-              }
-            });
+              });
+              note_arr.push("＝＝＝ ↑ 関連ノート ↑ ＝＝＝\n");
+            }
             this.dlform.noteArray = note_arr;
             this.phase = 2;
             setTimeout(() => alert("ノートを出力しました。"), 1500);

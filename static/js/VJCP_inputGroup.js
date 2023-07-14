@@ -3,7 +3,7 @@
  */
 let inputGroup = Vue.component("input-group", {
   template: `<div class="areaParts">
-    <p align="center" v-if="viewSessionMessage"><br /><b>セッションの保存内容を反映しました。</b></p>
+    <p align="center" v-if="viewSessionMessage"><br /><b>セッションの保存内容を反映しました。</b></p><br>
     <form :name="formName">
       <div class="separator">
         <label :for="'#' + formName + '_title'">ノートタイトル <span style="color:red" v-if="partsType==1"><b>&#042;</b></span></label>
