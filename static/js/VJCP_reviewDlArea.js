@@ -87,7 +87,7 @@ let reviewDlArea = Vue.component("review-dl", {
       let second_num = date.getSeconds();
       let zero_month = ('0' + month_num).slice(-2);
       let zero_date = ('0' + date_num).slice(-2);
-      let zero_hour = ('0' + minute_num).slice(-2);
+      let zero_hour = ('0' + hour_num).slice(-2);
       let zero_minute = ('0' + minute_num).slice(-2);
       let zero_second = ('0' + second_num).slice(-2);
 
