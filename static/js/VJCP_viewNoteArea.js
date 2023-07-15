@@ -2,8 +2,7 @@
  * コンポーネント：ノート出力・関連ノート設定エリア
  */
 let viewNoteArea = Vue.component("viewnote-area", {
-  template: `<div class="areaParts">
-      <br /><br />
+  template: `<div class="areaParts"><br /><br />
       <div class="separator">
         <p class="ft16px"><b>ノートタイトル ： </b><span>{{ getObject.title }}</span></p>
       </div>
@@ -38,8 +37,7 @@ let viewNoteArea = Vue.component("viewnote-area", {
                   class="view rel" 
                   :class="(line.length<1) ? 'pass' : ''" 
                   data-text=""
-                >--</span>
-                <span>&nbsp;</span>
+                >--</span><span>&nbsp;</span>
                 <input type="button" :id="'cancel_' + (index+1)" :data-target="'rel-line_' + (index+1)" 
                 class="btn btn-sm line-btn btn-danger str-sm none" value="Cancel" @click="cancelRelator">
               </p>

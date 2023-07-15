@@ -209,8 +209,7 @@ let inputGroup = Vue.component("input-group", {
       }
     },
     clearSession() {
-      const confirmMessage = "セッションの登録内容を消去します。よろしいですか？\n"
-                              + "（消去後に画面をリロードします）";
+      const confirmMessage = "セッションの登録内容を消去します。よろしいですか？\n（消去後に画面をリロードします）";
       let result = window.confirm(confirmMessage);
       if (result) {
         sessionStorage.clear();
