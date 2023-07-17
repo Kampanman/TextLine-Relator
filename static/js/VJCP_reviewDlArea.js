@@ -19,14 +19,13 @@ let reviewDlArea = Vue.component("review-dl", {
           </p>
         </div>
       </section>
-      <br /><input type="button" class="btn btn-primary" value="ダウンロード" v-if="doneDownload==false" @click="doDownload($event)">
+      <br /><input type="button" class="btn btn-primary" value="ダウンロード" @click="doDownload($event)">
   </div>`,
   data: function(){
     return {
       reviewTitle: this.note.title,
       reviewUrl: this.note.url,
       reviewTextArray: [],
-      doneDownload: false,
     }
   },
   // コンポーネント生成開始時の処理
@@ -76,7 +75,8 @@ let reviewDlArea = Vue.component("review-dl", {
         } catch (e) {
           console.log(e.message);
         }
-        this.doneDownload = true;
+
+        this.$emit("done-dl");
       }
     },
     getStringFromDate(date) {

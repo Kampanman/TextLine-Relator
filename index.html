@@ -69,9 +69,41 @@
     <div id="backScale">
       <!-- /* ここからが Vueインスタンス */ -->
       <section id="vueArea">
-        <div class="selectArea"></div>
-        <div class="cornerArea">
-          <dlnote-generator></dlnote-generator>
+        <div class="selectArea" align="center">
+          <input type="button" class="btn btn-info" value="dlnote-generator" @click="mode_num=1">
+          <input type="button" class="btn btn-info" value="textfile-loader" @click="mode_num=2">
+        </div>
+        <div class="cornerArea" v-if="mode_num==1">
+          <dlnote-generator @change-corner="changeCorner"></dlnote-generator>
+        </div>
+        <div class="cornerArea" v-if="mode_num==2">
+          <div><br /><br /></div>
+          <div class="corner fader" align="center">
+            <!-- /* ファイル選択orD&D */ -->
+            <label id="selectFileArea" class="btn btn-primary" :class="(loaded==1) ? 'none' : ''" for="selectFile">
+              <span class="ft20px">テキストファイルを選択してください</span>
+              <div class="none"><input type="file" id="selectFile" @change="selectFile" /></div>
+            </label><br />
+            <div class="textline ft20px" :class="(loaded==0) ? 'none' : 'fader'" align="left">
+              <span id="file_title"><b>ファイルタイトル：</b>{{ loadfile.title }}<br /></span><br />
+              <div align="center">
+                <form name="searching">
+                  <div class="searching_inner">
+                    <label for="searchword" class="exep">検索語： </label><input type="text" name="word" id="searchword">
+                  </div>
+                  <div class="searching_inner">
+                    <input type="button" name="do" class="btn btn-primary" value="検索">
+                    <input type="button" name="clear" class="btn btn-secondary" value="クリア">
+                  </div>
+                </form>
+              </div>
+              <b>ファイル内テキスト &#8659;<br /></b><br />
+              <span 
+                v-for="(line, index) in loadfile.text_array" 
+                :id="'line_'+(index+1)" 
+              >{{ line }}<br /></span>
+            </div><br />
+          </div>
         </div>
       </section>
       <!-- /* ここまでが Vueインスタンス */ -->
@@ -95,7 +127,12 @@
       el: '#vueArea',
       data: function () {
         return {
-
+          mode_num: 1,
+          loaded: 0,
+          loadfile: {
+            title: "",
+            text_array: [],
+          },
         };
       },
       created: function () {
@@ -106,6 +143,37 @@
         async init() {
 
         },
+        changeCorner(e) {
+          this.mode_num = 2;
+        },
+        selectFile() {
+          // FileListオブジェクト取得
+          const selectFiles = document.querySelector("#selectFile").files;
+
+          // Fileオブジェクト取得
+          const file = selectFiles[0];
+          
+          if(file.name.indexOf(".txt")<0){
+            alert("選択されたファイルがテキストファイルではありません。")
+          }else{
+            // FileReaderオブジェクト取得
+            const reader = new FileReader();
+            reader.readAsText(file);
+
+            // ファイル読み込み完了時の処理
+            reader.onload = () => {
+              let text_array = reader.result.split("\n");
+              this.loadfile.title = file.name;
+              this.loadfile.text_array = text_array;
+              this.loaded = 1;
+            }
+
+            // ファイル読み込みエラー時の処理
+            reader.onerror = () => {
+              console.log("ファイル読み込みエラー");
+            }
+          }
+        }
       },
     });
   </script>
