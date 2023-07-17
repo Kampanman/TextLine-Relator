@@ -43,7 +43,7 @@
 
   .view { color: black; }
 
-  .selected {
+  .selected, .hit {
     color: orange;
     font-weight: 600;
   }
