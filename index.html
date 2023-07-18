@@ -70,16 +70,24 @@
       <!-- /* ここからが Vueインスタンス */ -->
       <section id="vueArea">
         <div class="selectArea" align="center">
-          <input type="button" class="btn btn-info" value="dlnote-generator" @click="mode_num=1">
-          <input type="button" class="btn btn-info" value="textfile-loader" @click="mode_num=2">
+          <input 
+            type="button" 
+            class="btn btn-info" :class="(mode_num==1) ? 'menu-select' : ''" 
+            value="dlnote-generator" 
+            @click="mode_num=1"
+          >
+          <input 
+            type="button" 
+            class="btn btn-info" :class="(mode_num==2) ? 'menu-select' : ''" 
+            value="textfile-loader" 
+            @click="mode_num=2"
+          >
         </div>
         <div class="cornerArea" v-if="mode_num==1">
           <dlnote-generator @change-corner="changeCorner"></dlnote-generator>
         </div>
         <div class="cornerArea" v-if="mode_num==2">
-          <div class="corner fader" align="center">
-            <textfile-loader></textfile-loader>
-          </div>
+          <textfile-loader></textfile-loader>
         </div>
       </section>
       <!-- /* ここまでが Vueインスタンス */ -->

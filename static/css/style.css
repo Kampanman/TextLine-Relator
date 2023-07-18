@@ -36,6 +36,11 @@
   
   .ft20px { font-size: 20px; }
 
+  .menu-select {
+    box-shadow:yellow 0px 0px 5px 3px;
+    color: yellow;
+  }
+
   .line-btn {
     margin-bottom: 3px;
     padding: revert;
