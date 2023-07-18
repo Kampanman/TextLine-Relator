@@ -6,15 +6,15 @@ let inputGroup = Vue.component("input-group", {
     <p align="center" v-if="viewSessionMessage"><br /><b>セッションの保存内容を反映しました。</b></p><br>
     <form :name="formName">
       <div class="separator">
-        <label :for="'#' + formName + '_title'">ノートタイトル <span style="color:red" v-if="partsType==1"><b>&#042;</b></span></label>
+        <label :for="formName + '_title'">ノートタイトル <span style="color:red" v-if="partsType==1"><b>&#042;</b></span></label>
         <input type="text" :id="formName + '_title'" name="title" :placeholder="phword.title">
       </div>
       <div class="separator">
-        <label :for="'#' + formName + '_url'">URL</label>
+        <label :for="formName + '_url'">URL</label>
         <input type="text" :id="formName + '_url'" name="url" :placeholder="phword.url">
       </div>
       <div class="separator">
-        <label :for="'#' + formName + '_text'">ノート本文 <span style="color:red"><b>&#042;</b></span></label><br>
+        <label :for="formName + '_text'">ノート本文 <span style="color:red"><b>&#042;</b></span></label><br>
         <span class="blacker">&nbsp;</span>
         <textarea :id="formName + '_text'" name="text" rows="5" :placeholder="phword.text" @input="biteCount">{{ textareaValue }}</textarea>
         <p align="center">現在の本文総バイト数：{{ currentBite }} バイト</p>

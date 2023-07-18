@@ -35,7 +35,7 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
       <h3 align="center">フェーズ３：最終出力・ダウンロード</h3>
       <div align="center">
         <br /><input type="button" class="btn btn-danger" value="やり直す" @click="retry">
-        <review-dl :note="dlform"></review-dl>
+        <review-dl :note="dlform" @done-dl="changeCorner"></review-dl>
       </div>
     </div>
   </div>`,
@@ -168,6 +168,9 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
 
       return res_numstr;
     },
+    changeCorner() {
+      this.$emit("change-corner",2);
+    }
   },
 });
 

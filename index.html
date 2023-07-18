@@ -69,32 +69,49 @@
     <div id="backScale">
       <!-- /* ここからが Vueインスタンス */ -->
       <section id="vueArea">
-        <div class="selectArea"></div>
-        <div class="cornerArea">
-          <dlnote-generator></dlnote-generator>
+        <div class="selectArea" align="center">
+          <input 
+            type="button" 
+            class="btn btn-info" :class="(mode_num==1) ? 'menu-select' : ''" 
+            value="dlnote-generator" 
+            @click="mode_num=1"
+          >
+          <input 
+            type="button" 
+            class="btn btn-info" :class="(mode_num==2) ? 'menu-select' : ''" 
+            value="textfile-loader" 
+            @click="mode_num=2"
+          >
+        </div>
+        <div class="cornerArea" v-if="mode_num==1">
+          <dlnote-generator @change-corner="changeCorner"></dlnote-generator>
+        </div>
+        <div class="cornerArea" v-if="mode_num==2">
+          <textfile-loader></textfile-loader>
         </div>
       </section>
       <!-- /* ここまでが Vueインスタンス */ -->
     </div>
   </main>
-
   <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
   <!-- ↓ 非同期通信を実行するために必要 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
   <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  <script src="./static/js/JQ01_gotoTop.js"></script>
   <script type="module">
     import inputGroup from './static/js/VJCP_inputGroup.js';
     import viewNoteArea from './static/js/VJCP_viewNoteArea.js';
     import reviewDlArea from './static/js/VJCP_reviewDlArea.js';
     import transitionModal from './static/js/VJCP_transitionModal.js';
     import dlNoteGenerator from './static/js/VJCP_CORNER_dlNoteGenerator.js';
+    import textFileLoader from './static/js/VJCP_CORNER_textFileLoader.js';
 
     const common = new Vue({
       el: '#vueArea',
       data: function () {
         return {
-
+          mode_num: 1,
         };
       },
       created: function () {
@@ -104,6 +121,9 @@
         // 画面初期表示処理
         async init() {
 
+        },
+        changeCorner(e) {
+          this.mode_num = 2;
         },
       },
     });
