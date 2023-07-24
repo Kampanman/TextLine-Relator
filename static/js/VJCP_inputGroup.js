@@ -3,6 +3,12 @@
  */
 let inputGroup = Vue.component("input-group", {
   template: `<div class="areaParts">
+    <div align="center"><br />
+      <label id="" class="btn btn-warning" for="selectSaveJson">
+        <span>savedata-jsonを読み込む</span>
+        <div class="none"><input type="file" id="selectSaveJson" @change="selectSaveJson" /></div>
+      </label>
+    </div>
     <p align="center" v-if="viewSessionMessage"><br /><b>セッションの保存内容を反映しました。</b></p><br>
     <form :name="formName">
       <div class="separator">
@@ -217,6 +223,30 @@ let inputGroup = Vue.component("input-group", {
           alert("セッションの登録内容を消去しました。");
           location.reload();
         }, 1000);
+      }
+    },
+    selectSaveJson() {
+      // FileListオブジェクト取得
+      const selectFiles = document.querySelector("#selectSaveJson").files;
+      // Fileオブジェクト取得
+      const file = selectFiles[0];
+      if(file.name.indexOf(".json")<0){
+        alert("選択されたファイルがJSONファイルではありません。")
+      }else{
+        // FileReaderオブジェクト取得
+        const reader = new FileReader();
+        reader.readAsText(file);
+
+        // ファイル読み込み完了時の処理
+        reader.onload = () => {
+          let savedData = JSON.parse(reader.result);
+          this.$emit("json-data", savedData);
+        }
+
+        // ファイル読み込みエラー時の処理
+        reader.onerror = () => {
+          alert("ファイルの読み込みに失敗しました。");
+        }
       }
     },
   },

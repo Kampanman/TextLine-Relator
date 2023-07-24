@@ -1,7 +1,7 @@
 /**
  * コンポーネント：ノート出力・関連ノート設定エリア
  */
-let viewNoteArea = Vue.component("viewnote-area", {
+let viewJsonArea = Vue.component("viewjson-area", {
   template: `<div class="areaParts"><br /><br />
       <div class="separator">
         <p class="ft16px"><b>ノートタイトル ： </b><span class="note-title">{{ getObject.title }}</span></p>
@@ -15,9 +15,9 @@ let viewNoteArea = Vue.component("viewnote-area", {
             <th class="t-8"><p class="ft16px"><b>ノート本文 &#8659;</b></p></th>
             <th class="t-2"><p class="ft16px"><b>関連番号 &#8659;</b></p></th>
           </tr>
-          <tr v-for="(line, index) in getObject.textarray">
+          <tr v-for="(row, index) in getObject.note">
             <td class="t-8 txtline">
-              <p class="ft16px" v-if="line.length==0">
+              <p class="ft16px" v-if="isLineFeedOnly(row.line)==true">
                 <span :id="'line_' + (index+1)" class="view"><br /></span>
               </p>
               <p class="ft16px" v-else>
@@ -27,7 +27,7 @@ let viewNoteArea = Vue.component("viewnote-area", {
                   class="btn btn-sm line-btn btn-primary str-sm" value="ON" @click="viewal">
                 <input type="button" :id="'off_' + (index+1)" :data-target="'line_' + (index+1)" 
                   class="btn btn-sm line-btn btn-secondary str-sm" value="OFF" @click="unviewal">
-                <span :id="'line_' + (index+1)" class="view">{{ line }}</span>
+                <span :id="'line_' + (index+1)" class="view">{{ row.line }}</span>
               </p>
             </td>
             <td class="t-2">
@@ -35,11 +35,18 @@ let viewNoteArea = Vue.component("viewnote-area", {
                 <span 
                   :id="'rel-line_' + (index+1)" 
                   class="view rel" 
-                  :class="(line.length<1) ? 'pass' : ''" 
-                  data-text=""
-                >--</span><span>&nbsp;</span>
-                <input type="button" :id="'cancel_' + (index+1)" :data-target="'rel-line_' + (index+1)" 
-                class="btn btn-sm line-btn btn-danger str-sm none" value="Cancel" @click="cancelRelator">
+                  :class="(isLineFeedOnly(row.line)==true) ? 'pass' : ''" 
+                  :data-text="row.rel_text"
+                >{{ row.rel_num }}</span><span>&nbsp;</span>
+                <input 
+                  type="button" 
+                  :id="'cancel_' + (index+1)" 
+                  :data-target="'rel-line_' + (index+1)" 
+                  class="btn btn-sm line-btn btn-danger str-sm" 
+                  :class="(row.rel_num=='--') ? 'none' : ''"
+                  value="Cancel" 
+                  @click="cancelRelator"
+                >
               </p>
             </td>
           </tr>
@@ -97,8 +104,12 @@ let viewNoteArea = Vue.component("viewnote-area", {
       let this_target = e.target.dataset.target;
       document.getElementById(this_target).innerText = "--";
       document.getElementById(this_target).dataset.text = "";
+    },
+    isLineFeedOnly(str) {
+      const regex = /^\n[ ]?$/;
+      return regex.test(str);
     }
   },
 });
 
-export default viewNoteArea;
+export default viewJsonArea;

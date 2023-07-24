@@ -6,16 +6,18 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
     <!-- /* ノート入力エリア */ -->
     <div class="fader" v-if="phase==0">
       <h3 align="center">フェーズ１：ノート入力</h3>
-      <input-group :type="'1'" :form="'note_input'" @note-data="getNote"></input-group>
+      <input-group :type="'1'" :form="'note_input'" @note-data="getNote" @json-data="getJson"></input-group>
     </div>
     <!-- /* 入力ノート出力・補足テキスト入力エリア */ -->
     <div class="fader" v-if="phase==1">
       <h3 align="center">フェーズ２：ノート出力・行別設定</h3>
       <div align="center">
-        <br /><input type="button" class="btn btn-primary" value="これで出力する" @click="generateNote">
+        <br /><input type="button" class="btn btn-primary" value="TXT出力" @click="generateNote">
+        <input type="button" class="btn btn-warning" value="JSON出力" @click="generateJSON">
         <input type="button" class="btn btn-danger" value="やり直す" @click="retry">
       </div>
-      <viewnote-area :object="base" @modal-function="openModal"></viewnote-area>
+      <viewnote-area v-if="is_json_mode==0" :object="base" @modal-function="openModal"></viewnote-area>
+      <viewjson-area v-else :object="parsed" @modal-function="openModal"></viewjson-area>
         <!-- モーダルコンポーネント -->
         <transition-modal :obj="modalObj" @close="closeModal" v-if="modal">
           <!-- default スロットコンテンツ -->
@@ -51,6 +53,7 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
         url: "",
         textarray: "",
       },
+      parsed: {},
       modal: false,
       modalObj: {
         target: "",
@@ -61,6 +64,7 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
         url: "",
         noteArray: [],
       },
+      is_json_mode: 0,
     }
   },
   // コンポーネント生成開始時の処理
@@ -80,6 +84,7 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
     getNote(form){
       if(form.type=='1'){
         this.phase = 1;
+        this.is_json_mode = 0;
         this.base.title = form.title;
         this.base.url = form.url;
         this.base.textarray = form.textarray;
@@ -98,11 +103,18 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
       this.modal = false;
       setTimeout(()=> alert("関連コンテンツを設定しました。"), 1500);
     },
+    getJson(data) {
+      if (data.hasOwnProperty("note") && data.note[0].hasOwnProperty("line")) {
+        this.parsed = data;
+        this.phase = 1;
+        this.is_json_mode = 1;
+      }
+    },
     generateNote(){
       const conf = window.confirm("この内容でノートを出力します。よろしいですか？");
       if(conf){
-        this.dlform.title = this.base.title;
-        this.dlform.url = this.base.url;
+        this.dlform.title = (this.is_json_mode==0) ? this.base.title : this.parsed.title;
+        this.dlform.url = (this.is_json_mode==0) ? this.base.url : this.parsed.url;
         let note_arr = [];
         let rel_flg = 0;
         document.querySelectorAll(".view").forEach((e) => {
@@ -134,6 +146,41 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
         this.dlform.noteArray = note_arr;
         this.phase = 2;
         setTimeout(() => alert("ノートを出力しました。"), 1500);
+      }
+    },
+    generateJSON() {
+      const conf = window.confirm("一時保存用のJSONファイルを出力します。よろしいですか？");
+      if(conf){
+        let object = {};
+        let noteTitle = document.getElementsByClassName("note-title")[0].innerText;
+        let noteUrl = (document.getElementsByClassName("note-url") == null)
+          ? document.getElementsByClassName("note-url")[0].innerText : "";
+        object.date = new Date();
+        object.title = noteTitle;
+        object.url = noteUrl;
+
+        let txtLines = document.getElementsByClassName("txtline");
+        object.note = [];
+        for (let i = 0; i < txtLines.length; i++){
+          let lineText = document.getElementById('line_' + (i + 1)).innerText;
+          let relNum = document.getElementById('rel-line_' + (i + 1)).innerText;
+          let relText = document.getElementById('rel-line_' + (i + 1)).dataset.text;
+          object.note.push({ line:lineText, rel_num:relNum, rel_text:relText });
+        }
+        let objectJson = JSON.stringify(object);
+
+        try {
+          // JSONファイルのダウンロード
+          const blob = new Blob([objectJson], { type: 'application/json' });
+          const aTag = document.createElement('a');
+          aTag.href = URL.createObjectURL(blob);
+          aTag.target = '_blank';
+          aTag.download = 'savedata-json_' + object.title;
+          aTag.click();
+          URL.revokeObjectURL(aTag.href);
+        } catch (e) {
+          console.log(e.message);
+        }
       }
     },
     retry(){
