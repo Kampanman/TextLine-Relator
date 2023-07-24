@@ -12,7 +12,8 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
     <div class="fader" v-if="phase==1">
       <h3 align="center">フェーズ２：ノート出力・行別設定</h3>
       <div align="center">
-        <br /><input type="button" class="btn btn-primary" value="これで出力する" @click="generateNote">
+        <br /><input type="button" class="btn btn-primary" value="TXT出力" @click="generateNote">
+        <input type="button" class="btn btn-warning" value="JSON出力" @click="generateJSON">
         <input type="button" class="btn btn-danger" value="やり直す" @click="retry">
       </div>
       <viewnote-area :object="base" @modal-function="openModal"></viewnote-area>
@@ -134,6 +135,42 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
         this.dlform.noteArray = note_arr;
         this.phase = 2;
         setTimeout(() => alert("ノートを出力しました。"), 1500);
+      }
+    },
+    generateJSON() {
+      const conf = window.confirm("一時保存用のJSONファイルを出力します。よろしいですか？");
+      if(conf){
+        let object = {};
+        let noteTitle = document.getElementsByClassName("note-title")[0].innerText;
+        let noteUrl = (document.getElementsByClassName("note-url") == null)
+          ? document.getElementsByClassName("note-url")[0].innerText : "";
+        object.date = new Date();
+        object.title = noteTitle;
+        object.url = noteUrl;
+
+        let txtLines = document.getElementsByClassName("txtline");
+        object.note = [];
+        for (let i = 0; i < txtLines.length; i++){
+          let lineText = document.getElementById('line_' + (i + 1)).innerText;
+          let relNum = document.getElementById('rel-line_' + (i + 1)).innerText;
+          let relText = document.getElementById('rel-line_' + (i + 1)).dataset.text;
+          object.note.push({ line:lineText, rel_num:relNum, rel_text:relText });
+        }
+        let objectJson = JSON.stringify(object);
+        console.log(objectJson);
+
+        try {
+          // JSONファイルのダウンロード
+          const blob = new Blob([objectJson], { type: 'application/json' });
+          const aTag = document.createElement('a');
+          aTag.href = URL.createObjectURL(blob);
+          aTag.target = '_blank';
+          aTag.download = 'savedata-json_' + object.title;
+          aTag.click();
+          URL.revokeObjectURL(aTag.href);
+        } catch (e) {
+          console.log(e.message);
+        }
       }
     },
     retry(){

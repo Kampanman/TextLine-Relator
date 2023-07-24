@@ -4,19 +4,19 @@
 let viewNoteArea = Vue.component("viewnote-area", {
   template: `<div class="areaParts"><br /><br />
       <div class="separator">
-        <p class="ft16px"><b>ノートタイトル ： </b><span>{{ getObject.title }}</span></p>
+        <p class="ft16px"><b>ノートタイトル ： </b><span class="note-title">{{ getObject.title }}</span></p>
       </div>
       <div class="separator" v-if="getObject.url.length>0">
-        <p class="ft16px"><b>ノートURL ： </b><span>{{ getObject.url }}</span></p>
+        <p class="ft16px"><b>ノートURL ： </b><span class="note-url">{{ getObject.url }}</span></p>
       </div>
       <div class="separator">
-        <table>
+        <table class="note-text">
           <tr>
             <th class="t-8"><p class="ft16px"><b>ノート本文 &#8659;</b></p></th>
             <th class="t-2"><p class="ft16px"><b>関連番号 &#8659;</b></p></th>
           </tr>
           <tr v-for="(line, index) in getObject.textarray">
-            <td class="t-8">
+            <td class="t-8 txtline">
               <p class="ft16px" v-if="line.length==0">
                 <span :id="'line_' + (index+1)" class="view"><br /></span>
               </p>
