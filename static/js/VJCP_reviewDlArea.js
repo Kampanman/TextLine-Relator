@@ -19,7 +19,7 @@ let reviewDlArea = Vue.component("review-dl", {
           </p>
         </div>
       </section>
-      <br /><input type="button" class="btn btn-primary" value="ダウンロード" @click="doDownload($event)">
+      <div><input type="button" class="btn btn-primary" value="ダウンロード" @click="doDownload($event)"></div><br />
   </div>`,
   data: function(){
     return {

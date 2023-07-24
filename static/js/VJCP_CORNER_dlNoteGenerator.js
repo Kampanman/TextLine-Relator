@@ -6,7 +6,7 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
     <!-- /* ノート入力エリア */ -->
     <div class="fader" v-if="phase==0">
       <h3 align="center">フェーズ１：ノート入力</h3>
-      <input-group :type="'1'" :form="'note_input'" @note-data="getNote"></input-group>
+      <input-group :type="'1'" :form="'note_input'" @note-data="getNote" @json-data="getJson"></input-group>
     </div>
     <!-- /* 入力ノート出力・補足テキスト入力エリア */ -->
     <div class="fader" v-if="phase==1">
@@ -16,7 +16,8 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
         <input type="button" class="btn btn-warning" value="JSON出力" @click="generateJSON">
         <input type="button" class="btn btn-danger" value="やり直す" @click="retry">
       </div>
-      <viewnote-area :object="base" @modal-function="openModal"></viewnote-area>
+      <viewnote-area v-if="is_json_mode==0" :object="base" @modal-function="openModal"></viewnote-area>
+      <viewjson-area v-else :object="parsed" @modal-function="openModal"></viewjson-area>
         <!-- モーダルコンポーネント -->
         <transition-modal :obj="modalObj" @close="closeModal" v-if="modal">
           <!-- default スロットコンテンツ -->
@@ -52,6 +53,7 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
         url: "",
         textarray: "",
       },
+      parsed: {},
       modal: false,
       modalObj: {
         target: "",
@@ -62,6 +64,7 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
         url: "",
         noteArray: [],
       },
+      is_json_mode: 0,
     }
   },
   // コンポーネント生成開始時の処理
@@ -81,6 +84,7 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
     getNote(form){
       if(form.type=='1'){
         this.phase = 1;
+        this.is_json_mode = 0;
         this.base.title = form.title;
         this.base.url = form.url;
         this.base.textarray = form.textarray;
@@ -99,11 +103,18 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
       this.modal = false;
       setTimeout(()=> alert("関連コンテンツを設定しました。"), 1500);
     },
+    getJson(data) {
+      if (data.hasOwnProperty("note") && data.note[0].hasOwnProperty("line")) {
+        this.parsed = data;
+        this.phase = 1;
+        this.is_json_mode = 1;
+      }
+    },
     generateNote(){
       const conf = window.confirm("この内容でノートを出力します。よろしいですか？");
       if(conf){
-        this.dlform.title = this.base.title;
-        this.dlform.url = this.base.url;
+        this.dlform.title = (this.is_json_mode==0) ? this.base.title : this.parsed.title;
+        this.dlform.url = (this.is_json_mode==0) ? this.base.url : this.parsed.url;
         let note_arr = [];
         let rel_flg = 0;
         document.querySelectorAll(".view").forEach((e) => {
@@ -157,7 +168,6 @@ let dlNoteGenerator = Vue.component("dlnote-generator", {
           object.note.push({ line:lineText, rel_num:relNum, rel_text:relText });
         }
         let objectJson = JSON.stringify(object);
-        console.log(objectJson);
 
         try {
           // JSONファイルのダウンロード
