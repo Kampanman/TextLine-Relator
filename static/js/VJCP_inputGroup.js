@@ -3,7 +3,7 @@
  */
 let inputGroup = Vue.component("input-group", {
   template: `<div class="areaParts">
-    <div align="center"><br />
+    <div align="center" v-if="partsType==1"><br />
       <label id="" class="btn btn-warning" for="selectSaveJson">
         <span>savedata-jsonを読み込む</span>
         <div class="none"><input type="file" id="selectSaveJson" @change="selectSaveJson" /></div>
