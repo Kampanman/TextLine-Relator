@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, user-scalable=yes, maximum-scale=1.0, minimum-scale=1.0" />
+  <meta name="description" content="Text-Relator" />
+  <meta name="keywords" content="" />
+  <link rel="icon" href="../favicon.ico" type="image/x-icon">
+  <link rel="icon" href="../favicon.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css?family=Sawarabi+Gothic" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./style.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <title>savedata-json for Linker-csv-file generator</title>
+</head>
+
+<body>
+  <header id="headerArea" align="center">
+    <h2 id="contentsTitle">savedata-json for Linker-csv-file generator</h2>
+  </header>
+  <main id="mainArea">
+    <div><br /></div>
+    <div id="backScale">
+      <!-- /* ここからが Vueインスタンス */ -->
+      <section id="vueArea">
+        <div align="center" id="beforeReader" v-if="phase==1"><br />
+          <label id="" class="btn btn-warning" for="selectSaveJson">
+            <span>savedata-jsonを読み込む</span>
+            <div class="none"><input type="file" id="selectSaveJson" @change="selectSaveJson" /></div>
+          </label>
+        </div>
+        <div id="afterReader" class="fader none">
+          <section align="center" class="buttonArea areaParts">
+            <input type="button" class="btn btn-success" value="CSVファイルをダウンロード" @click="generateDlCsv">
+            <input type="button" class="btn btn-danger" value="リロード" @click="doReload">
+          </section>
+          <br /><br />
+          <section class="textsArea t-8 areaParts">
+            <label>タイトル</label><span id="jsonTitle">{{ selectedJson.title }}</span><br>
+            <label>URL</label><span id="jsonUrl">{{ selectedJson.url=="" ? "設定なし" : selectedJson.url }}</span><br>
+            <label>ノート行数</label><span id="jsonNoteLength">{{ selectedJson.noteCount }}</span><br>
+            <label>CSV行数</label><span id="csvLength">{{ selectedJson.csvRowCount }}</span><br>
+            <label for="registerId">作成者ID</label><input type="text" name="registerId" id="registerId" v-model="registerId"><br>
+            <label for="publicity">公開設定</label>
+            <select name="publicity" id="publicity" v-model="publicity_type">
+              <option value="1">公開 </option>
+              <option value="0">非公開 </option>
+              <option value="2">講師にのみ公開 </option>
+            </select><br>
+          </section>
+        </div>
+      </section>
+      <!-- /* ここまでが Vueインスタンス */ -->
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  <script type="module">
+
+    const common = new Vue({
+      el: '#vueArea',
+      data: function () {
+        return {
+          phase: 1,
+          selectedJson: {},
+          registerId: "",
+          publicity_type: 1,
+        };
+      },
+      created: function () {
+        this.init();
+      },
+      mounted: function () {
+        // 
+      },
+      methods: {
+        // 画面初期表示処理
+        async init() {
+          
+        },
+        countRels(noteArray) {
+          let relCount = 0;
+          noteArray.forEach(function(row){
+            if(row.rel_num!="--"){
+              relCount++;
+              row.line = row.line + " @"+ row.rel_num;
+            }
+          })
+          return relCount;
+        },
+        doReload(){
+          location.reload();
+        },
+        selectSaveJson() {
+          // FileListオブジェクト取得
+          const selectFiles = document.querySelector("#selectSaveJson").files;
+          // Fileオブジェクト取得
+          const file = selectFiles[0];
+          if (file.name.indexOf(".json") < 0) {
+            alert("選択されたファイルがJSONファイルではありません。")
+          } else {
+            // FileReaderオブジェクト取得
+            const reader = new FileReader();
+            reader.readAsText(file);
+
+            // ファイル読み込み完了時の処理
+            reader.onload = () => {
+              let savedData = JSON.parse(reader.result);
+              this.selectedJson.title = savedData.title;
+              this.selectedJson.url = savedData.url;
+              this.selectedJson.note = savedData.note;
+              this.selectedJson.noteCount = savedData.note.length;
+              this.selectedJson.csvRowCount = this.countRels(savedData.note) + 1;
+              this.phase = 2;
+              document.getElementById("afterReader").classList.remove("none");
+            }
+
+            // ファイル読み込みエラー時の処理
+            reader.onerror = () => {
+              alert("ファイルの読み込みに失敗しました。");
+            }
+          }
+        },
+        makeRandStr() {
+          const randStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" + "abcdefghijklmnopqrstuvwxyz" + "1234567890";
+          const randstr_arr = randStr.split("");
+          let res_randstr = "";
+          for(let i=0; i<6; i++){
+            let rand_num = Math.floor(Math.random() * randstr_arr.length);
+            res_randstr += randstr_arr[rand_num];
+          }
+          return res_randstr;
+        },
+        validRegisterId(){
+          let res = true;
+          const pattern = /^\d+$/g;
+          const result = this.registerId.match(pattern);
+          if(result==null) res = false;
+          return res;
+        },
+        setNowDate() {
+          const date = new Date();
+          const setMonth = 1 + date.getMonth();
+          const dayOfWeek = date.getDay(); // 曜日(数値)
+          const dateParam = {
+            year_str: date.getFullYear(),
+            month_strWithZero: setMonth.toString().padStart(2, '0'),
+            day_strWithZero: date.getDate().toString().padStart(2, '0'),
+            hour_strWithZero: date.getHours().toString().padStart(2, '0'),
+            minute_strWithZero: date.getMinutes().toString().padStart(2, '0'),
+            second_strWithZero: date.getSeconds().toString().padStart(2, '0'),
+            dayOfWeekStr: ['日', '月', '火', '水', '木', '金', '土'][dayOfWeek] // 曜日
+          };
+          return dateParam;
+        },
+        generateDlCsv() {
+          if(this.registerId==""){
+            alert("作成者IDが入力されていません。");
+            return;
+          } else if (!this.validRegisterId()) {
+            alert("作成者IDの入力値が適切ではありません。");
+            return;
+          }
+
+          const confirm = window.confirm("CSVファイルに変換します。よろしいですか？");
+          if(confirm){
+              const rootId = this.makeRandStr();
+              let csvLines = "";
+              let mainNote = "";
+              this.selectedJson.note.forEach(function(row){
+                let addLine = (row.line=="\n") ? "" : row.line
+                mainNote += addLine + "\\n";
+              });
+              mainNote = mainNote.slice(0, "\\n".length * -1);
+
+              const common_pub = this.publicity_type;
+              const common_date = this.setNowDate().year_str + "-" + this.setNowDate().month_strWithZero + "-" + this.setNowDate().day_strWithZero
+                                  + " " + this.setNowDate().hour_strWithZero + ":"
+                                  + this.setNowDate().minute_strWithZero + ":" + this.setNowDate().second_strWithZero;
+              const common_id = this.registerId;
+              csvLines += `"${rootId}_0","${this.selectedJson.title}","${this.selectedJson.url}","${mainNote}","${common_pub}","${common_date}","${common_id}"\n`;
+
+              let rel_index = 1;
+              this.selectedJson.note.forEach(function(row, index){
+                if(row.rel_num!="--"){
+                  let param = { "title":"", "url":"", "title_lock": false, "url_lock": false };
+                  
+                  let rowArray = row.rel_text.split("\n").map(function(rowLine){
+                    if(!param.title_lock && rowLine.match(/^ - About: [^@]+/)){
+                      param.title = rowLine.match(/^ - About: [^@]+/).input + "\\n";
+                      param.title_lock = true;
+                    }
+                    if(!param.url_lock && rowLine.match(/^ - URL: https?:\/\/[^@]+/)){
+                      param.url = rowLine.match(/^ - URL: https?:\/\/[^@]+/).input.replace(" - URL: ","");
+                      param.url_lock = true;
+                    }
+                    if(rowLine.match(/^ - About: [^@]+/) || rowLine.match(/^ - URL: https:?\/\/[^@]+/)) rowLine = "(delete)";
+                    return rowLine;
+                  });
+                  rowArray = rowArray.filter(function(rowLine){
+                    return !(rowLine == "(delete)");
+                  });
+
+                  let renualedText = rowArray.join("\\n");
+                  const rel_insert = `【@${row.rel_num}】\\n${param.title}\\n`;
+                  renualedText = rel_insert + renualedText.replaceAll("\n","\\n");
+                  const thisId = `${rootId}_${rel_index}`;
+                  csvLines += `"${thisId}","関連ノート ${thisId}","${param.url}","${renualedText}","${common_pub}","${common_date}","${common_id}"\n`;
+                  rel_index++;
+                }
+              });
+
+            try {
+              // CSVファイル(TXT形式)のダウンロード
+              const blob = new Blob([csvLines], { type: 'text/plain' });
+              const aTag = document.createElement('a');
+              aTag.href = URL.createObjectURL(blob);
+              aTag.target = '_blank';
+              aTag.download = 'savedata-csv_' + this.selectedJson.title;
+              aTag.click();
+              URL.revokeObjectURL(aTag.href);
+            } catch (e) {
+              console.log(e.message);
+            }
+
+          }
+        },
+      },
+    });
+  </script>
+</body>
+</html>
